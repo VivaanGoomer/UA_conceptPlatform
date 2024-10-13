@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Accessibility Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-logo {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+        }
+
+        .navbar-logo h2 {
+            margin: 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        ul li {
+            display: inline-block;
+            padding: 1rem;
+        }
+
+        ul li a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 2rem 0;
+        }
+
+        .form-section {
+            background: #fff;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-logo">
+        <h2>Unified Accessibility</h2>
+    </nav>
+
+    <ul>
+        <li><a href="screen_1.html">Test</a></li>
+        <li><a href="screen_2.html">Defect Results</a></li>
+        <li><a href="screen_3.html">Generate ACR</a></li>
+        <li><a href="screen_4.html">ACR Results</a></li>
+    </ul>
+
+    <div class="container">
+        <form id="startTestForm">
+            <div class="form-section">
+                <h3>Start Test</h3>
+                <select id="wcagStandard" name="wcagStandard" aria-label="Select WCAG Standards" required>
+                    <option value="">Select WCAG Standards</option>
+                    <option value="wcag21">WCAG 2.1</option>
+                    <option value="wcag20">WCAG 2.0</option>
+                    <option value="wcag22">WCAG 2.2</option>
+                </select>
+                <select id="wcagLevel" name="wcagLevel" aria-label="Select WCAG Conformance Levels" required>
+                    <option value="">Select WCAG Conformance Levels</option>
+                    <option value="A">A</option>
+                    <option value="AA">AA</option>
+                    <option value="AAA">AAA</option>
+                </select>
+                <select id="vpatTemplate" name="vpatTemplate" aria-label="Select VPAT Template Version" required>
+                    <option value="">Select VPAT Template Version</option>
+                    <option value="vpat2023">VPAT November 2023</option>
+                    <option value="vpat2022">VPAT June 2022</option>
+                    <option value="vpat2021">VPAT March 2021</option>
+                </select>
+                <input type="text" id="platform" name="platform" placeholder="Enter Platform" aria-label="Platform" required>
+                <input type="text" id="environment" name="environment" placeholder="Enter Environment" aria-label="Environment" required>
+                <input type="text" id="siteUrl" name="siteUrl" placeholder="Enter Site URL" aria-label="Site URL" required>
+            </div>
+
+            <div class="button-container">
+                <button type="submit">Start Test</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('startTestForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submitted');
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            console.log('Form data:', data);
+
+            fetch('/submit-form', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(result => {
+                console.log('Server response:', result);
+                if (result.redirect) {
+                    console.log('Redirecting to screen_2.html');
+                    window.location.href = '/screen_2.html';
+                } else {
+                    console.log('No redirect flag in response');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please check the console for details.');
+            });
+        });
+    });
+    </script>
+</body>
+</html>

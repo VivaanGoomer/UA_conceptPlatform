@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate ACR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-logo {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+        }
+
+        .navbar-logo h2 {
+            margin: 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        ul li {
+            display: inline-block;
+            padding: 1rem;
+        }
+
+        ul li a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 2rem 0;
+        }
+
+        .vpat-header, .accessibility-testing {
+            background: #fff;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .form-section {
+            margin-bottom: 1rem;
+        }
+
+        select, input[type="text"], input[type="date"], textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .checkbox-group {
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-logo">
+        <h2>Unified Accessibility</h2>
+    </nav>
+
+    <ul>
+        <li><a href="screen_1.html">Test</a></li>
+        <li><a href="screen_2.html">Defect Results</a></li>
+        <li><a href="screen_3.html">Generate ACR</a></li>
+        <li><a href="screen_4.html">ACR Results</a></li>
+    </ul>
+
+    <div class="container">
+        <form id="acrForm">
+            <div class="vpat-header">
+                <div class="form-section">
+                    <h3>VPAT Header Info</h3>
+                    <select name="wcagStandards" required>
+                        <option value="">Select WCAG Standards</option>
+                        <option value="WCAG 2.1">WCAG 2.1</option>
+                        <option value="WCAG 2.0">WCAG 2.0</option>
+                        <option value="WCAG 2.2">WCAG 2.2</option>
+                    </select>
+                    <select name="wcagConformance" required>
+                        <option value="">Select WCAG Conformance Levels</option>
+                        <option value="A">A</option>
+                        <option value="AA">AA</option>
+                        <option value="AAA">AAA</option>
+                    </select>
+                    <select name="vpatVersion" required>
+                        <option value="">VPAT Template Version</option>
+                        <option value="VPAT November 2023">VPAT November 2023</option>
+                        <option value="VPAT June 2022">VPAT June 2022</option>
+                        <option value="VPAT March 2021">VPAT March 2021</option>
+                    </select>
+                    <input type="text" name="reportAuthor" placeholder="Report Author" required>
+                    <input type="date" name="reportDate" required>
+                    <input type="text" name="companyName" placeholder="Company Name" required>
+                    <textarea name="notes" placeholder="Notes"></textarea>
+                </div>
+            </div>
+
+            <div class="accessibility-testing">
+                <div class="form-section">
+                    <h3>Accessibility Testing Info</h3>
+                    <p>Evaluation Process (Check all that apply)</p>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="evaluationProcess" value="Manual and Automated Testing"> Manual and Automated Testing</label>
+                        <label><input type="checkbox" name="evaluationProcess" value="Manual Testing Only"> Manual Testing Only</label>
+                        <label><input type="checkbox" name="evaluationProcess" value="Automated Testing Only"> Automated Testing Only</label>
+                        <label><input type="checkbox" name="evaluationProcess" value="3rd Party Independent Audits"> 3rd Party Independent Audits</label>
+                    </div>
+                    <select name="testingDoneBy" required>
+                        <option value="">Testing Done By</option>
+                        <option value="Internal Team">Internal Team</option>
+                        <option value="External Audit">External Audit</option>
+                    </select>
+                    <input type="text" name="testingPlatform" placeholder="Testing on (Platform, Browser, Assistive Tech)" required>
+                    <select name="userTesting" required>
+                        <option value="">User Testing</option>
+                        <option value="None">None</option>
+                        <option value="With Disability">With Disability</option>
+                        <option value="Without Disability">Without Disability</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button type="submit">Generate ACR</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('acrForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // Handle checkbox group
+            data.evaluationProcess = formData.getAll('evaluationProcess');
+
+            fetch('/generate-acr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.redirect) {
+                    window.location.href = result.redirect;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+    </script>
+</body>
+</html>
